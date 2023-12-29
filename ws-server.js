@@ -1,49 +1,47 @@
-const express = require('express');
-const app = express();
-const http = require('http');
 const WebSocket = require('ws');
-const bodyParser = require('body-parser');
+const http = require('http');
+const express = require("express");
 const cors = require('cors');
-app.use(bodyParser.json());
+const app = express();
+
+app.use(express.json({ type: "application/json" }));
 app.use(cors());
 
-// room server
+app.get("/*", (req, res) => {
+    res.send("Api is connected");
+});
 
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ port: 4000 });
+const wsServer = new WebSocket.Server({ server: server });
 const rooms = {};
 const websockets = []
 
 function broadcastToRoom(webSocketmessage) {
     const mes = JSON.parse(webSocketmessage);
     if (mes.type === "delete") {
-        for (const client of wss.clients) {
+        for (const client of wsServer.clients) {
             client.send(webSocketmessage);
         }
     }
     else if (mes.type === "kicked") {
-        for (const client of wss.clients) {
+        for (const client of wsServer.clients) {
             client.send(webSocketmessage);
         }
     }
     else {
-        for (const client of wss.clients) {
+        for (const client of wsServer.clients) {
             client.send(webSocketmessage);
         }
     }
 };
 
-wss.on('connection', (ws) => {
+wsServer.on('connection', function (ws) {
     ws.on('message', (message) => {
         let mes = JSON.parse(message)
         console.log(mes);
         broadcastToRoom(JSON.stringify(mes));
     });
 });
-
-app.get('/', (req, res) => {
-    res.send("Api is connected");
-})
 
 app.post('/create-room', (req, res) => {
     let randomNumber = Math.floor(Math.random() * 10000);
@@ -125,6 +123,6 @@ app.delete('/delete-room/:roomId', (req, res) => {
     res.json({ message: `Room ${roomId} has been deleted, and all participants have been removed.` });
 });
 
-app.listen(5000, () => {
-    console.log('Server is running on port 5000');
+server.listen(5000, () => {
+    console.log('WebSocket server listening on port 5000');
 });
