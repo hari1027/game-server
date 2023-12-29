@@ -41,6 +41,10 @@ wss.on('connection', (ws) => {
     });
 });
 
+app.get('/', (req, res) => {
+    res.send("Api is connected");
+})
+
 app.post('/create-room', (req, res) => {
     let randomNumber = Math.floor(Math.random() * 10000);
     let fourDigitCode = randomNumber.toString().padStart(4, '0');
