@@ -3,9 +3,6 @@ const http = require('http');
 const express = require("express");
 const cors = require('cors');
 const app = express();
-const dotenv = require('dotenv')
-
-dotenv.config()
 
 app.use(express.json({ type: "application/json" }));
 app.use(cors());
@@ -126,6 +123,6 @@ app.delete('/delete-room/:roomId', (req, res) => {
     res.json({ message: `Room ${roomId} has been deleted, and all participants have been removed.` });
 });
 
-server.listen(process.env.PORT, () => {
-    console.log(`WebSocket server listening on port ${process.env.PORT}`);
+server.listen(5000, () => {
+    console.log(`WebSocket server listening on port 5000`);
 });
